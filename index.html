@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrackGen</title>
+    <title>AutoTrack</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -36,7 +36,7 @@
 <body>
 
 <header>
-    <h1>TrackGen</h1>
+    <h1>AutoTrack</h1>
     <p>Automate your business requirement documentation with ease!</p>
 </header>
 
@@ -65,13 +65,13 @@
 </div>
 
 <footer class="text-center mt-4">
-    <p> Help | kavin_m@optum.com</p>
+    <p>Your Name | Implementation Analyst</p>
 </footer>
 
 <script>
     document.getElementById('inputForm').addEventListener('submit', async function(event) {
         event.preventDefault();
-        
+
         const fileInput = document.getElementById('fileInput').files[0];
         const urlInput = document.getElementById('urlInput').value;
 
@@ -79,22 +79,26 @@
         const spinner = document.querySelector('.spinner');
         spinner.style.display = 'inline-block';
 
-        // Placeholder for actual processing logic
-        let output = 'Processing...'; // Temporary message
-        document.getElementById('output').innerText = output;
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('file', fileInput); // Append the file input
 
-        // Simulate a delay for processing
-        setTimeout(() => {
-            // Hide spinner
-            spinner.style.display = 'none';
-            
-            // Update output with generated business questions (this is a placeholder)
-            output = 'Generated Business Questions:\n1. Track page load.\n2. Track button clicks.\n3. Check component existence.';
-            document.getElementById('output').innerText = output;
+        // Send the file to the backend
+        const response = await fetch('http://localhost:5000/upload', {
+            method: 'POST',
+            body: formData,
+        });
 
-            // Show download button
-            document.getElementById('downloadButton').style.display = 'inline-block';
-        }, 2000);
+        const result = await response.json(); // Get the response from the server
+
+        // Hide spinner
+        spinner.style.display = 'none';
+
+        // Display the result message
+        document.getElementById('output').innerText = result.message; // Display success message
+
+        // Show download button (if needed)
+        // document.getElementById('downloadButton').style.display = 'inline-block'; // Uncomment if applicable
     });
 </script>
 
