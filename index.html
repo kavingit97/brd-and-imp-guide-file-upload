@@ -25,7 +25,7 @@
             background-color: #ffffff;
             border: 1px solid #dee2e6;
             border-radius: 5px;
-            position: relative; /* Make sure output section is relative for positioning */
+            position: relative; /* Ensure output section is relative for positioning */
         }
         .spinner {
             display: none;
@@ -33,7 +33,7 @@
             height: 3rem;
         }
     </style>
-    <script async src="https://docs.opencv.org/4.5.3/opencv.js"></script>
+    <script async src="https://docs.opencv.org/4.5.3/opencv.js" onload="this.onload = null; cv.onRuntimeInitialized = () => console.log('OpenCV.js is ready.');"></script>
 </head>
 <body>
 
@@ -117,24 +117,14 @@
                     console.log('Number of contours detected:', contours.size());
 
                     // Process contours to find clickable components
-                    let detectionFound = false; // Flag to check if any detections are made
                     for (let i = 0; i < contours.size(); i++) {
                         const c = contours.get(i);
                         const rect = cv.boundingRect(c);
-                        console.log('Contour:', i, 'Rect:', rect); // Log contour information
 
                         // Adjust these values based on your image dimensions
                         if (rect.width > 30 && rect.height > 30) { // Minimum size for a button
                             drawRectangle(outputDiv, rect.x, rect.y, rect.width, rect.height);
-                            detectionFound = true; // Set flag to true if a detection is found
                         }
-                    }
-
-                    // If no detections were found
-                    if (!detectionFound) {
-                        const p = document.createElement('p');
-                        p.innerText = 'No clickable components detected.';
-                        outputDiv.appendChild(p);
                     }
 
                     // Clean up
@@ -166,9 +156,6 @@
         outputDiv.appendChild(rect);
     }
 </script>
-
-
-
 
 </body>
 </html>
