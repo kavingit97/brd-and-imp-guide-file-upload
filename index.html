@@ -3,61 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clickable Component Detection</title>
+    <title>YOLO Object Detection</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
+    <script src="https://cdn.jsdelivr.net/gh/rafaelguilherme/yolo-tfjs/dist/yolo.min.js"></script>
     <style>
         body { font-family: Arial, sans-serif; }
-        .output-section { position: relative; }
-        .spinner { display: none; }
-        .rectangle { position: absolute; border: 2px solid red; pointer-events: none; } /* Disable pointer events */
+        img { max-width: 100%; }
+        .rectangle { position: absolute; border: 2px solid red; }
     </style>
 </head>
 <body>
 
-<h1>Image Upload and Detection</h1>
+<h1>YOLO Object Detection</h1>
 <form id="inputForm">
     <input type="file" id="fileInput" accept="image/*" required>
     <button type="submit">Process</button>
-    <div class="spinner" id="spinner">Loading...</div>
 </form>
 
-<div class="output-section" id="outputSection"></div>
+<div id="outputSection" style="position: relative;"></div>
 
 <script>
-    document.getElementById('inputForm').addEventListener('submit', function(event) {
+    document.getElementById('inputForm').addEventListener('submit', async function(event) {
         event.preventDefault();
 
         const fileInput = document.getElementById('fileInput').files[0];
         const reader = new FileReader();
         const outputSection = document.getElementById('outputSection');
         outputSection.innerHTML = ''; // Clear previous output
-        const spinner = document.getElementById('spinner');
-        spinner.style.display = 'block';
 
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             const imgElement = document.createElement('img');
             imgElement.src = e.target.result;
-            imgElement.style.maxWidth = '100%'; // Adjust the size to fit within the container
-            imgElement.style.height = 'auto';
             outputSection.appendChild(imgElement);
 
-            imgElement.onload = function() {
-                // Hardcoding likely clickable component positions based on typical UI layouts
-                const width = imgElement.width;
-                const height = imgElement.height;
+            imgElement.onload = async function() {
+                // Load YOLO model
+                const model = await yolo.load();
+                const predictions = await model.detect(imgElement);
 
-                // Example clickable areas based on common layout
-                const clickableElements = [
-                    { class: 'Button', x: width * 0.1, y: height * 0.6, width: width * 0.25, height: height * 0.08 }, // Simulated button
-                    { class: 'Link', x: width * 0.5, y: height * 0.4, width: width * 0.2, height: height * 0.05 },  // Simulated link
-                    { class: 'Input Field', x: width * 0.75, y: height * 0.8, width: width * 0.2, height: height * 0.05 } // Simulated input field
-                ];
-
-                // Draw rectangles based on hardcoded positions
-                clickableElements.forEach(element => {
-                    drawRectangle(outputSection, element.x, element.y, element.width, element.height);
+                // Draw rectangles around detected objects
+                predictions.forEach(prediction => {
+                    drawRectangle(outputSection, prediction.bbox[0], prediction.bbox[1], prediction.bbox[2], prediction.bbox[3]);
+                    console.log(`Detected: ${prediction.class} with confidence: ${prediction.score}`);
                 });
-
-                spinner.style.display = 'none'; // Hide spinner
             };
         };
 
@@ -67,12 +56,10 @@
     function drawRectangle(outputDiv, x, y, width, height) {
         const rect = document.createElement('div');
         rect.className = 'rectangle';
-        rect.style.left = `${x}px`; // Adjust to image position
+        rect.style.left = `${x}px`;
         rect.style.top = `${y}px`;
         rect.style.width = `${width}px`;
         rect.style.height = `${height}px`;
-
-        // Append the rectangle to the output div
         outputDiv.appendChild(rect);
     }
 </script>
