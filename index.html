@@ -84,7 +84,11 @@
                 const model = await mobilenet.load();
                 const predictions = await model.classify(imgElement);
 
-                // Display predictions with a threshold
+                // Get the output div element
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerHTML = ''; // Clear previous output
+
+                // Set a threshold for displaying predictions
                 const threshold = 0.5; // Set a threshold value
                 predictions.forEach(pred => {
                     if (pred.probability > threshold) {
@@ -94,7 +98,6 @@
                     }
                 });
 
-
                 // Hide spinner
                 spinner.style.display = 'none';
             };
@@ -103,6 +106,7 @@
         reader.readAsDataURL(fileInput); // Read the image file
     });
 </script>
+
 
 </body>
 </html>
