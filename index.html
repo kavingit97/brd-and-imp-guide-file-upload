@@ -78,44 +78,48 @@
         spinner.style.display = 'inline-block';
 
         reader.onload = async function(e) {
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = ''; // Clear previous output
+
+            // Create and append the image element
             const imgElement = document.createElement('img');
             imgElement.src = e.target.result;
-            imgElement.onload = async function() {
-                const outputDiv = document.getElementById('output');
-                outputDiv.innerHTML = ''; // Clear previous output
+            imgElement.style.position = 'relative'; // Set the position relative for proper placement
+            imgElement.style.maxWidth = '100%'; // Adjust the size to fit within the container
+            imgElement.style.height = 'auto';
+            outputDiv.appendChild(imgElement);
 
-                // Simulate detecting some clickable elements with heuristics (e.g., rectangles for buttons)
-                const clickableElements = [
-                    { class: 'Button', x: 50, y: 100, width: 100, height: 40, confidence: 0.9 },
-                    { class: 'Link', x: 200, y: 150, width: 80, height: 30, confidence: 0.85 },
-                    { class: 'Input Field', x: 300, y: 200, width: 120, height: 50, confidence: 0.78 }
-                ];
+            // Simulate detecting some clickable elements with heuristics (e.g., rectangles for buttons)
+            const clickableElements = [
+                { class: 'Button', x: 50, y: 100, width: 100, height: 40, confidence: 0.9 },
+                { class: 'Link', x: 200, y: 150, width: 80, height: 30, confidence: 0.85 },
+                { class: 'Input Field', x: 300, y: 200, width: 120, height: 50, confidence: 0.78 }
+            ];
 
-                // Display detected clickable components
-                clickableElements.forEach(component => {
-                    const p = document.createElement('p');
-                    p.innerText = `Detected: ${component.class} (Confidence: ${component.confidence.toFixed(2)})`;
-                    outputDiv.appendChild(p);
+            // Draw rectangles over the image
+            clickableElements.forEach(component => {
+                const p = document.createElement('p');
+                p.innerText = `Detected: ${component.class} (Confidence: ${component.confidence.toFixed(2)})`;
+                outputDiv.appendChild(p);
 
-                    // Draw a rectangle to highlight the clickable component
-                    drawRectangle(outputDiv, component.x, component.y, component.width, component.height);
-                });
+                // Draw rectangle to highlight clickable components
+                drawRectangle(outputDiv, component.x, component.y, component.width, component.height, imgElement);
+            });
 
-                // Hide spinner
-                spinner.style.display = 'none';
-            };
+            // Hide spinner
+            spinner.style.display = 'none';
         };
 
         reader.readAsDataURL(fileInput); // Read the image file
     });
 
-    // Function to draw rectangles around detected clickable components
-    function drawRectangle(outputDiv, x, y, width, height) {
+    // Function to draw rectangles around detected clickable components relative to the image
+    function drawRectangle(outputDiv, x, y, width, height, imgElement) {
         const rect = document.createElement('div');
         rect.style.position = 'absolute';
         rect.style.border = '2px solid red';
-        rect.style.left = `${x}px`;
-        rect.style.top = `${y}px`;
+        rect.style.left = `${imgElement.offsetLeft + x}px`; // Adjust to image position
+        rect.style.top = `${imgElement.offsetTop + y}px`;
         rect.style.width = `${width}px`;
         rect.style.height = `${height}px`;
 
