@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrackGen</title>
+    <title>AutoTrack</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -25,6 +25,7 @@
             background-color: #ffffff;
             border: 1px solid #dee2e6;
             border-radius: 5px;
+            position: relative; /* Make sure output section is relative for positioning */
         }
         .spinner {
             display: none;
@@ -32,15 +33,12 @@
             height: 3rem;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-    <script src="https://docs.opencv.org/3.4/opencv.js" async></script>
+    <script async src="https://docs.opencv.org/4.5.3/opencv.js"></script>
 </head>
 <body>
 
 <header>
-    <h1>TrackGen</h1>
+    <h1>AutoTrack</h1>
     <p>Automate your business requirement documentation with ease!</p>
 </header>
 
@@ -64,7 +62,7 @@
 </div>
 
 <footer class="text-center mt-4">
-    <p>Kavin | kavin_m@optum.com</p>
+    <p>Your Name | Implementation Analyst</p>
 </footer>
 
 <script>
@@ -89,7 +87,7 @@
             imgElement.style.height = 'auto';
             outputDiv.appendChild(imgElement);
 
-            imgElement.onload = function() {
+            imgElement.onload = async function() {
                 // Wait for OpenCV.js to be loaded
                 cv.onRuntimeInitialized = async () => {
                     // Create a canvas to process the image
