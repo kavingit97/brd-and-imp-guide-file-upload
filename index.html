@@ -100,31 +100,41 @@
                     // Convert the canvas image to a Mat object for processing
                     const src = cv.imread(canvas);
                     const dst = new cv.Mat();
-                    
+
                     // Convert to grayscale
                     cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY);
-                    
                     // Apply Gaussian Blur
                     cv.GaussianBlur(src, src, new cv.Size(5, 5), 0);
-                    
                     // Perform Canny Edge Detection
                     cv.Canny(src, dst, 100, 200);
-                    
+
                     // Find contours
                     const contours = new cv.MatVector();
                     const hierarchy = new cv.Mat();
                     cv.findContours(dst, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 
+                    // Log the number of contours detected
+                    console.log('Number of contours detected:', contours.size());
+
                     // Process contours to find clickable components
+                    let detectionFound = false; // Flag to check if any detections are made
                     for (let i = 0; i < contours.size(); i++) {
                         const c = contours.get(i);
                         const rect = cv.boundingRect(c);
-                        
-                        // Heuristic filters
-                        if (rect.width > 30 && rect.height > 10) { // Minimum size for a button
-                            // Add further heuristics here
+                        console.log('Contour:', i, 'Rect:', rect); // Log contour information
+
+                        // Adjust these values based on your image dimensions
+                        if (rect.width > 30 && rect.height > 30) { // Minimum size for a button
                             drawRectangle(outputDiv, rect.x, rect.y, rect.width, rect.height);
+                            detectionFound = true; // Set flag to true if a detection is found
                         }
+                    }
+
+                    // If no detections were found
+                    if (!detectionFound) {
+                        const p = document.createElement('p');
+                        p.innerText = 'No clickable components detected.';
+                        outputDiv.appendChild(p);
                     }
 
                     // Clean up
@@ -156,6 +166,7 @@
         outputDiv.appendChild(rect);
     }
 </script>
+
 
 
 
