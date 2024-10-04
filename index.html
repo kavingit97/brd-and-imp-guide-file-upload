@@ -83,26 +83,29 @@
             imgElement.onload = async function() {
                 // Load the COCO-SSD model
                 const model = await cocoSsd.load();
+                console.log('Model loaded:', model);
+
+                // Perform object detection
                 const predictions = await model.detect(imgElement);
+                console.log('Predictions:', predictions);
 
                 // Get the output div element
                 const outputDiv = document.getElementById('output');
                 outputDiv.innerHTML = ''; // Clear previous output
 
-                // Filter predictions for clickable components
-                const clickableComponents = predictions.filter(pred => 
-                    pred.class === 'button' || 
-                    pred.class === 'link' || 
-                    pred.class === 'input' || 
-                    pred.class === 'anchor' // Adjust based on the model
-                );
-
-                // Display detected clickable components
-                clickableComponents.forEach(component => {
+                // Check if predictions are empty
+                if (predictions.length === 0) {
                     const p = document.createElement('p');
-                    p.innerText = `Detected: ${component.class} (Confidence: ${component.score.toFixed(2)})`;
+                    p.innerText = 'No clickable components detected.';
                     outputDiv.appendChild(p);
-                });
+                } else {
+                    // Filter predictions for clickable components (buttons, links, etc.)
+                    predictions.forEach(component => {
+                        const p = document.createElement('p');
+                        p.innerText = `Detected: ${component.class} (Confidence: ${component.score.toFixed(2)})`;
+                        outputDiv.appendChild(p);
+                    });
+                }
 
                 // Hide spinner
                 spinner.style.display = 'none';
@@ -112,6 +115,7 @@
         reader.readAsDataURL(fileInput); // Read the image file
     });
 </script>
+
 
 
 
