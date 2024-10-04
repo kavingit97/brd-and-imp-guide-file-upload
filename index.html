@@ -47,11 +47,12 @@
 
                 // Simulate detection by drawing rectangles in common clickable areas
                 const clickableElements = [
-                    { x: width * 0.1, y: height * 0.5, width: 120, height: 40 }, // Simulated button
-                    { x: width * 0.5, y: height * 0.4, width: 80, height: 30 },  // Simulated link
-                    { x: width * 0.7, y: height * 0.7, width: 150, height: 50 }  // Simulated input field
+                    { class: 'Button', x: width * 0.1, y: height * 0.5, width: width * 0.2, height: height * 0.1 }, // Simulated button
+                    { class: 'Link', x: width * 0.5, y: height * 0.4, width: width * 0.15, height: height * 0.05 }, // Simulated link
+                    { class: 'Input Field', x: width * 0.7, y: height * 0.7, width: width * 0.25, height: height * 0.05 } // Simulated input field
                 ];
 
+                // Adjust positions dynamically based on typical UI elements
                 clickableElements.forEach(element => {
                     drawRectangle(outputSection, element.x, element.y, element.width, element.height);
                 });
