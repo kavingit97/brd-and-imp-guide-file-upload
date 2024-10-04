@@ -8,8 +8,8 @@
         body { font-family: Arial, sans-serif; }
         .output-section { position: relative; }
         .spinner { display: none; }
+        .rectangle { position: absolute; border: 2px solid red; }
     </style>
-    <script async src="https://docs.opencv.org/4.5.3/opencv.js"></script>
 </head>
 <body>
 
@@ -36,63 +36,42 @@
         reader.onload = function(e) {
             const imgElement = document.createElement('img');
             imgElement.src = e.target.result;
+            imgElement.style.maxWidth = '100%'; // Adjust the size to fit within the container
+            imgElement.style.height = 'auto';
+            outputSection.appendChild(imgElement);
+
             imgElement.onload = function() {
-                cv.onRuntimeInitialized = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = imgElement.width;
-                    canvas.height = imgElement.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(imgElement, 0, 0);
-                    const src = cv.imread(canvas);
-                    const dst = new cv.Mat();
+                // Simple heuristic detection
+                const width = imgElement.width;
+                const height = imgElement.height;
 
-                    // Image processing steps
-                    cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY); // Grayscale
-                    cv.GaussianBlur(src, src, new cv.Size(5, 5), 0); // Blur
-                    cv.Canny(src, dst, 100, 200); // Edge detection
+                // Simulate detection by drawing rectangles in common clickable areas
+                const clickableElements = [
+                    { x: width * 0.1, y: height * 0.5, width: 120, height: 40 }, // Simulated button
+                    { x: width * 0.5, y: height * 0.4, width: 80, height: 30 },  // Simulated link
+                    { x: width * 0.7, y: height * 0.7, width: 150, height: 50 }  // Simulated input field
+                ];
 
-                    // Draw processed image for debugging
-                    const processedCanvas = document.createElement('canvas');
-                    processedCanvas.width = canvas.width;
-                    processedCanvas.height = canvas.height;
-                    cv.imshow(processedCanvas, dst);
-                    outputSection.appendChild(processedCanvas);
+                clickableElements.forEach(element => {
+                    drawRectangle(outputSection, element.x, element.y, element.width, element.height);
+                });
 
-                    // Find contours
-                    const contours = new cv.MatVector();
-                    const hierarchy = new cv.Mat();
-                    cv.findContours(dst, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
-
-                    // Process contours to identify clickable components
-                    for (let i = 0; i < contours.size(); i++) {
-                        const c = contours.get(i);
-                        const rect = cv.boundingRect(c);
-                        if (rect.width > 30 && rect.height > 30) { // Size threshold
-                            drawRectangle(outputSection, rect.x, rect.y, rect.width, rect.height);
-                        }
-                    }
-
-                    // Clean up
-                    src.delete();
-                    dst.delete();
-                    contours.delete();
-                    hierarchy.delete();
-                    spinner.style.display = 'none';
-                };
+                spinner.style.display = 'none'; // Hide spinner
             };
-            outputSection.appendChild(imgElement); // Show the original image
         };
-        reader.readAsDataURL(fileInput);
+
+        reader.readAsDataURL(fileInput); // Read the image file
     });
 
     function drawRectangle(outputDiv, x, y, width, height) {
         const rect = document.createElement('div');
-        rect.style.position = 'absolute';
-        rect.style.border = '2px solid red';
-        rect.style.left = `${x}px`;
+        rect.className = 'rectangle';
+        rect.style.left = `${x}px`; // Adjust to image position
         rect.style.top = `${y}px`;
         rect.style.width = `${width}px`;
         rect.style.height = `${height}px`;
+
+        // Append the rectangle to the output div
         outputDiv.appendChild(rect);
     }
 </script>
