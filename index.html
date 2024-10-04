@@ -84,14 +84,16 @@
                 const model = await mobilenet.load();
                 const predictions = await model.classify(imgElement);
 
-                // Display predictions
-                const outputDiv = document.getElementById('output');
-                outputDiv.innerHTML = '';
+                // Display predictions with a threshold
+                const threshold = 0.5; // Set a threshold value
                 predictions.forEach(pred => {
-                    const p = document.createElement('p');
-                    p.innerText = `${pred.className}: ${pred.probability.toFixed(2)}`;
-                    outputDiv.appendChild(p);
+                    if (pred.probability > threshold) {
+                        const p = document.createElement('p');
+                        p.innerText = `${pred.className}: ${pred.probability.toFixed(2)}`;
+                        outputDiv.appendChild(p);
+                    }
                 });
+
 
                 // Hide spinner
                 spinner.style.display = 'none';
