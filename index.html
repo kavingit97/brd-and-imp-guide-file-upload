@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AutoTrack</title>
+    <title>TrackGen</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -39,7 +39,7 @@
 <body>
 
 <header>
-    <h1>AutoTrack</h1>
+    <h1>TrackGen</h1>
     <p>Automate your business requirement documentation with ease!</p>
 </header>
 
@@ -63,10 +63,9 @@
 </div>
 
 <footer class="text-center mt-4">
-    <p>Your Name | Implementation Analyst</p>
+    <p>Kavin | kavin_m@optum.com</p>
 </footer>
 
-// Example of a heuristic-based approach to detect rectangular regions
 <script>
     document.getElementById('inputForm').addEventListener('submit', async function(event) {
         event.preventDefault();
@@ -82,22 +81,24 @@
             const imgElement = document.createElement('img');
             imgElement.src = e.target.result;
             imgElement.onload = async function() {
-                // Load the COCO-SSD model or use another heuristic-based approach here
-                // For now, we'll simulate detecting rectangular clickable elements
-
                 const outputDiv = document.getElementById('output');
                 outputDiv.innerHTML = ''; // Clear previous output
 
-                // Simulate detecting some rectangular areas (mock detection)
+                // Simulate detecting some clickable elements with heuristics (e.g., rectangles for buttons)
                 const clickableElements = [
-                    { class: 'button', x: 50, y: 100, width: 100, height: 40, confidence: 0.9 },
-                    { class: 'link', x: 200, y: 150, width: 80, height: 30, confidence: 0.8 }
+                    { class: 'Button', x: 50, y: 100, width: 100, height: 40, confidence: 0.9 },
+                    { class: 'Link', x: 200, y: 150, width: 80, height: 30, confidence: 0.85 },
+                    { class: 'Input Field', x: 300, y: 200, width: 120, height: 50, confidence: 0.78 }
                 ];
 
+                // Display detected clickable components
                 clickableElements.forEach(component => {
                     const p = document.createElement('p');
                     p.innerText = `Detected: ${component.class} (Confidence: ${component.confidence.toFixed(2)})`;
                     outputDiv.appendChild(p);
+
+                    // Draw a rectangle to highlight the clickable component
+                    drawRectangle(outputDiv, component.x, component.y, component.width, component.height);
                 });
 
                 // Hide spinner
@@ -107,7 +108,22 @@
 
         reader.readAsDataURL(fileInput); // Read the image file
     });
+
+    // Function to draw rectangles around detected clickable components
+    function drawRectangle(outputDiv, x, y, width, height) {
+        const rect = document.createElement('div');
+        rect.style.position = 'absolute';
+        rect.style.border = '2px solid red';
+        rect.style.left = `${x}px`;
+        rect.style.top = `${y}px`;
+        rect.style.width = `${width}px`;
+        rect.style.height = `${height}px`;
+
+        // Append the rectangle to the output div
+        outputDiv.appendChild(rect);
+    }
 </script>
+
 
 
 
