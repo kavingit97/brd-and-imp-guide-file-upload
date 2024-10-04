@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrackGen</title>
+    <title>AutoTrack</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -36,7 +36,7 @@
 <body>
 
 <header>
-    <h1>TrackGen</h1>
+    <h1>AutoTrack</h1>
     <p>Automate your business requirement documentation with ease!</p>
 </header>
 
@@ -44,12 +44,8 @@
     <h2>Input Section</h2>
     <form id="inputForm">
         <div class="form-group">
-            <label for="fileInput">Upload an Image or PDF:</label>
-            <input type="file" class="form-control-file" id="fileInput" accept=".jpg,.jpeg,.png,.pdf">
-        </div>
-        <div class="form-group">
-            <label for="urlInput">Or Enter a URL:</label>
-            <input type="url" class="form-control" id="urlInput" placeholder="Enter URL">
+            <label for="fileInput">Upload an Image:</label>
+            <input type="file" class="form-control-file" id="fileInput" accept=".jpg,.jpeg,.png">
         </div>
         <button type="submit" class="btn btn-primary">Process</button>
         <div class="spinner-border text-primary spinner" role="status">
@@ -60,7 +56,6 @@
     <div class="output-section">
         <h3>Output Section</h3>
         <div id="output"></div>
-        <button id="downloadButton" class="btn btn-success" style="display:none;">Download Document</button>
     </div>
 </div>
 
@@ -73,7 +68,6 @@
         event.preventDefault();
 
         const fileInput = document.getElementById('fileInput').files[0];
-        const urlInput = document.getElementById('urlInput').value;
 
         // Show loading spinner
         const spinner = document.querySelector('.spinner');
@@ -95,10 +89,7 @@
         spinner.style.display = 'none';
 
         // Display the result message
-        document.getElementById('output').innerText = result.message; // Display success message
-
-        // Show download button (if needed)
-        // document.getElementById('downloadButton').style.display = 'inline-block'; // Uncomment if applicable
+        document.getElementById('output').innerText = result.questions.join('\n'); // Display questions line by line
     });
 </script>
 
