@@ -6,11 +6,11 @@
     <title>YOLO Object Detection</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
-    <script src="https://cdn.jsdelivr.net/gh/rafaelguilherme/yolo-tfjs/dist/yolo.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/hyperzsb/yolo-tfjs/dist/yolo.js"></script>
     <style>
         body { font-family: Arial, sans-serif; }
         img { max-width: 100%; }
-        .rectangle { position: absolute; border: 2px solid red; }
+        .rectangle { position: absolute; border: 2px solid red; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -39,7 +39,7 @@
 
             imgElement.onload = async function() {
                 // Load YOLO model
-                const model = await yolo.load();
+                const model = await yolo.load(); // This will change if using a different model
                 const predictions = await model.detect(imgElement);
 
                 // Draw rectangles around detected objects
