@@ -66,6 +66,7 @@
     <p>Kavin | kavin_m@optum.com</p>
 </footer>
 
+// Updated clickable element simulation
 <script>
     document.getElementById('inputForm').addEventListener('submit', async function(event) {
         event.preventDefault();
@@ -89,12 +90,8 @@
             imgElement.style.height = 'auto';
             outputDiv.appendChild(imgElement);
 
-            // Simulate detecting some clickable elements with heuristics (e.g., rectangles for buttons)
-            const clickableElements = [
-                { class: 'Button', x: 50, y: 100, width: 100, height: 40, confidence: 0.9 },
-                { class: 'Link', x: 200, y: 150, width: 80, height: 30, confidence: 0.85 },
-                { class: 'Input Field', x: 300, y: 200, width: 120, height: 50, confidence: 0.78 }
-            ];
+            // Simulated detection logic for clickable components based on image size
+            const clickableElements = simulateDetection(imgElement);
 
             // Draw rectangles over the image
             clickableElements.forEach(component => {
@@ -113,7 +110,20 @@
         reader.readAsDataURL(fileInput); // Read the image file
     });
 
-    // Function to draw rectangles around detected clickable components relative to the image
+    // Simulated detection logic for clickable components
+    function simulateDetection(imgElement) {
+        const width = imgElement.width;
+        const height = imgElement.height;
+
+        // Create mock detection based on relative positioning
+        return [
+            { class: 'Button', x: width * 0.1, y: height * 0.5, width: width * 0.2, height: height * 0.1, confidence: 0.9 },
+            { class: 'Link', x: width * 0.5, y: height * 0.4, width: width * 0.15, height: height * 0.05, confidence: 0.85 },
+            { class: 'Input Field', x: width * 0.7, y: height * 0.7, width: width * 0.25, height: height * 0.05, confidence: 0.78 }
+        ];
+    }
+
+    // Function to draw rectangles around detected clickable components
     function drawRectangle(outputDiv, x, y, width, height, imgElement) {
         const rect = document.createElement('div');
         rect.style.position = 'absolute';
@@ -127,6 +137,7 @@
         outputDiv.appendChild(rect);
     }
 </script>
+
 
 
 
