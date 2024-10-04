@@ -115,11 +115,16 @@
                     const hierarchy = new cv.Mat();
                     cv.findContours(dst, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 
+                    // Debug: Check if contours are detected
+                    console.log('Number of contours detected:', contours.size());
+
                     // Process contours to find clickable components
                     for (let i = 0; i < contours.size(); i++) {
                         const c = contours.get(i);
                         const rect = cv.boundingRect(c);
-                        if (rect.width > 30 && rect.height > 10) { // Filter by size
+
+                        // Adjust these values based on your image dimensions
+                        if (rect.width > 20 && rect.height > 20) { // Change these thresholds as necessary
                             drawRectangle(outputDiv, rect.x, rect.y, rect.width, rect.height);
                         }
                     }
@@ -153,6 +158,7 @@
         outputDiv.appendChild(rect);
     }
 </script>
+
 
 </body>
 </html>
