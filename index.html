@@ -35,6 +35,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <script src="https://docs.opencv.org/3.4/opencv.js" async></script>
 </head>
 <body>
 
@@ -66,7 +67,6 @@
     <p>Kavin | kavin_m@optum.com</p>
 </footer>
 
-// Updated clickable element simulation
 <script>
     document.getElementById('inputForm').addEventListener('submit', async function(event) {
         event.preventDefault();
@@ -85,51 +85,69 @@
             // Create and append the image element
             const imgElement = document.createElement('img');
             imgElement.src = e.target.result;
-            imgElement.style.position = 'relative'; // Set the position relative for proper placement
             imgElement.style.maxWidth = '100%'; // Adjust the size to fit within the container
             imgElement.style.height = 'auto';
             outputDiv.appendChild(imgElement);
 
-            // Simulated detection logic for clickable components based on image size
-            const clickableElements = simulateDetection(imgElement);
+            imgElement.onload = function() {
+                // Wait for OpenCV.js to be loaded
+                cv.onRuntimeInitialized = async () => {
+                    // Create a canvas to process the image
+                    const canvas = document.createElement('canvas');
+                    canvas.width = imgElement.width;
+                    canvas.height = imgElement.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(imgElement, 0, 0);
 
-            // Draw rectangles over the image
-            clickableElements.forEach(component => {
-                const p = document.createElement('p');
-                p.innerText = `Detected: ${component.class} (Confidence: ${component.confidence.toFixed(2)})`;
-                outputDiv.appendChild(p);
+                    // Convert the canvas image to a Mat object for processing
+                    const src = cv.imread(canvas);
+                    const dst = new cv.Mat();
+                    
+                    // Convert to grayscale
+                    cv.cvtColor(src, src, cv.COLOR_RGBA2GRAY);
+                    
+                    // Apply Gaussian Blur
+                    cv.GaussianBlur(src, src, new cv.Size(5, 5), 0);
+                    
+                    // Perform Canny Edge Detection
+                    cv.Canny(src, dst, 100, 200);
+                    
+                    // Find contours
+                    const contours = new cv.MatVector();
+                    const hierarchy = new cv.Mat();
+                    cv.findContours(dst, contours, hierarchy, cv.RETR_CCOMP, cv.CHAIN_APPROX_SIMPLE);
 
-                // Draw rectangle to highlight clickable components
-                drawRectangle(outputDiv, component.x, component.y, component.width, component.height, imgElement);
-            });
+                    // Process contours to find clickable components
+                    for (let i = 0; i < contours.size(); i++) {
+                        const c = contours.get(i);
+                        const rect = cv.boundingRect(c);
+                        if (rect.width > 30 && rect.height > 10) { // Filter by size
+                            drawRectangle(outputDiv, rect.x, rect.y, rect.width, rect.height);
+                        }
+                    }
 
-            // Hide spinner
-            spinner.style.display = 'none';
+                    // Clean up
+                    src.delete();
+                    dst.delete();
+                    contours.delete();
+                    hierarchy.delete();
+                    
+                    // Hide spinner
+                    spinner.style.display = 'none';
+                };
+            };
         };
 
         reader.readAsDataURL(fileInput); // Read the image file
     });
 
-    // Simulated detection logic for clickable components
-    function simulateDetection(imgElement) {
-        const width = imgElement.width;
-        const height = imgElement.height;
-
-        // Create mock detection based on relative positioning
-        return [
-            { class: 'Button', x: width * 0.1, y: height * 0.5, width: width * 0.2, height: height * 0.1, confidence: 0.9 },
-            { class: 'Link', x: width * 0.5, y: height * 0.4, width: width * 0.15, height: height * 0.05, confidence: 0.85 },
-            { class: 'Input Field', x: width * 0.7, y: height * 0.7, width: width * 0.25, height: height * 0.05, confidence: 0.78 }
-        ];
-    }
-
     // Function to draw rectangles around detected clickable components
-    function drawRectangle(outputDiv, x, y, width, height, imgElement) {
+    function drawRectangle(outputDiv, x, y, width, height) {
         const rect = document.createElement('div');
         rect.style.position = 'absolute';
         rect.style.border = '2px solid red';
-        rect.style.left = `${imgElement.offsetLeft + x}px`; // Adjust to image position
-        rect.style.top = `${imgElement.offsetTop + y}px`;
+        rect.style.left = `${x}px`;
+        rect.style.top = `${y}px`;
         rect.style.width = `${width}px`;
         rect.style.height = `${height}px`;
 
@@ -137,12 +155,6 @@
         outputDiv.appendChild(rect);
     }
 </script>
-
-
-
-
-
-
 
 </body>
 </html>
