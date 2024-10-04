@@ -66,6 +66,7 @@
     <p>Your Name | Implementation Analyst</p>
 </footer>
 
+// Example of a heuristic-based approach to detect rectangular regions
 <script>
     document.getElementById('inputForm').addEventListener('submit', async function(event) {
         event.preventDefault();
@@ -81,31 +82,23 @@
             const imgElement = document.createElement('img');
             imgElement.src = e.target.result;
             imgElement.onload = async function() {
-                // Load the COCO-SSD model
-                const model = await cocoSsd.load();
-                console.log('Model loaded:', model);
+                // Load the COCO-SSD model or use another heuristic-based approach here
+                // For now, we'll simulate detecting rectangular clickable elements
 
-                // Perform object detection
-                const predictions = await model.detect(imgElement);
-                console.log('Predictions:', predictions);
-
-                // Get the output div element
                 const outputDiv = document.getElementById('output');
                 outputDiv.innerHTML = ''; // Clear previous output
 
-                // Check if predictions are empty
-                if (predictions.length === 0) {
+                // Simulate detecting some rectangular areas (mock detection)
+                const clickableElements = [
+                    { class: 'button', x: 50, y: 100, width: 100, height: 40, confidence: 0.9 },
+                    { class: 'link', x: 200, y: 150, width: 80, height: 30, confidence: 0.8 }
+                ];
+
+                clickableElements.forEach(component => {
                     const p = document.createElement('p');
-                    p.innerText = 'No clickable components detected.';
+                    p.innerText = `Detected: ${component.class} (Confidence: ${component.confidence.toFixed(2)})`;
                     outputDiv.appendChild(p);
-                } else {
-                    // Filter predictions for clickable components (buttons, links, etc.)
-                    predictions.forEach(component => {
-                        const p = document.createElement('p');
-                        p.innerText = `Detected: ${component.class} (Confidence: ${component.score.toFixed(2)})`;
-                        outputDiv.appendChild(p);
-                    });
-                }
+                });
 
                 // Hide spinner
                 spinner.style.display = 'none';
@@ -115,6 +108,7 @@
         reader.readAsDataURL(fileInput); // Read the image file
     });
 </script>
+
 
 
 
