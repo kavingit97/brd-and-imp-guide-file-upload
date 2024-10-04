@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrackGen</title>
+    <title>AutoTrack</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -32,11 +32,13 @@
             height: 3rem;
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
 </head>
 <body>
 
 <header>
-    <h1>TrackGen</h1>
+    <h1>AutoTrack</h1>
     <p>Automate your business requirement documentation with ease!</p>
 </header>
 
@@ -60,7 +62,7 @@
 </div>
 
 <footer class="text-center mt-4">
-    <p>Kavin | kavin_m@optum.com</p>
+    <p>Your Name | Implementation Analyst</p>
 </footer>
 
 <script>
@@ -68,28 +70,35 @@
         event.preventDefault();
 
         const fileInput = document.getElementById('fileInput').files[0];
+        const reader = new FileReader();
 
         // Show loading spinner
         const spinner = document.querySelector('.spinner');
         spinner.style.display = 'inline-block';
 
-        // Prepare form data
-        const formData = new FormData();
-        formData.append('file', fileInput); // Append the file input
+        reader.onload = async function(e) {
+            const imgElement = document.createElement('img');
+            imgElement.src = e.target.result;
+            imgElement.onload = async function() {
+                // Load the MobileNet model
+                const model = await mobilenet.load();
+                const predictions = await model.classify(imgElement);
 
-        // Send the file to the backend
-        const response = await fetch('http://localhost:5000/upload', {
-            method: 'POST',
-            body: formData,
-        });
+                // Display predictions
+                const outputDiv = document.getElementById('output');
+                outputDiv.innerHTML = '';
+                predictions.forEach(pred => {
+                    const p = document.createElement('p');
+                    p.innerText = `${pred.className}: ${pred.probability.toFixed(2)}`;
+                    outputDiv.appendChild(p);
+                });
 
-        const result = await response.json(); // Get the response from the server
+                // Hide spinner
+                spinner.style.display = 'none';
+            };
+        };
 
-        // Hide spinner
-        spinner.style.display = 'none';
-
-        // Display the result message
-        document.getElementById('output').innerText = result.questions.join('\n'); // Display questions line by line
+        reader.readAsDataURL(fileInput); // Read the image file
     });
 </script>
 
