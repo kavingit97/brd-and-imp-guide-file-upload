@@ -34,6 +34,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
 </head>
 <body>
 
@@ -80,22 +81,27 @@
             const imgElement = document.createElement('img');
             imgElement.src = e.target.result;
             imgElement.onload = async function() {
-                // Load the MobileNet model
-                const model = await mobilenet.load();
-                const predictions = await model.classify(imgElement);
+                // Load the COCO-SSD model
+                const model = await cocoSsd.load();
+                const predictions = await model.detect(imgElement);
 
                 // Get the output div element
                 const outputDiv = document.getElementById('output');
                 outputDiv.innerHTML = ''; // Clear previous output
 
-                // Set a threshold for displaying predictions
-                const threshold = 0.5; // Set a threshold value
-                predictions.forEach(pred => {
-                    if (pred.probability > threshold) {
-                        const p = document.createElement('p');
-                        p.innerText = `${pred.className}: ${pred.probability.toFixed(2)}`;
-                        outputDiv.appendChild(p);
-                    }
+                // Filter predictions for clickable components
+                const clickableComponents = predictions.filter(pred => 
+                    pred.class === 'button' || 
+                    pred.class === 'link' || 
+                    pred.class === 'input' || 
+                    pred.class === 'anchor' // Adjust based on the model
+                );
+
+                // Display detected clickable components
+                clickableComponents.forEach(component => {
+                    const p = document.createElement('p');
+                    p.innerText = `Detected: ${component.class} (Confidence: ${component.score.toFixed(2)})`;
+                    outputDiv.appendChild(p);
                 });
 
                 // Hide spinner
@@ -106,6 +112,7 @@
         reader.readAsDataURL(fileInput); // Read the image file
     });
 </script>
+
 
 
 </body>
