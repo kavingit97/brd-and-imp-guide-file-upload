@@ -8,7 +8,7 @@
         body { font-family: Arial, sans-serif; }
         .output-section { position: relative; }
         .spinner { display: none; }
-        .rectangle { position: absolute; border: 2px solid red; }
+        .rectangle { position: absolute; border: 2px solid red; pointer-events: none; } /* Disable pointer events */
     </style>
 </head>
 <body>
@@ -41,18 +41,18 @@
             outputSection.appendChild(imgElement);
 
             imgElement.onload = function() {
-                // Simple heuristic detection
+                // Hardcoding likely clickable component positions based on typical UI layouts
                 const width = imgElement.width;
                 const height = imgElement.height;
 
-                // Simulate detection by drawing rectangles in common clickable areas
+                // Example clickable areas based on common layout
                 const clickableElements = [
-                    { class: 'Button', x: width * 0.1, y: height * 0.5, width: width * 0.2, height: height * 0.1 }, // Simulated button
-                    { class: 'Link', x: width * 0.5, y: height * 0.4, width: width * 0.15, height: height * 0.05 }, // Simulated link
-                    { class: 'Input Field', x: width * 0.7, y: height * 0.7, width: width * 0.25, height: height * 0.05 } // Simulated input field
+                    { class: 'Button', x: width * 0.1, y: height * 0.6, width: width * 0.25, height: height * 0.08 }, // Simulated button
+                    { class: 'Link', x: width * 0.5, y: height * 0.4, width: width * 0.2, height: height * 0.05 },  // Simulated link
+                    { class: 'Input Field', x: width * 0.75, y: height * 0.8, width: width * 0.2, height: height * 0.05 } // Simulated input field
                 ];
 
-                // Adjust positions dynamically based on typical UI elements
+                // Draw rectangles based on hardcoded positions
                 clickableElements.forEach(element => {
                     drawRectangle(outputSection, element.x, element.y, element.width, element.height);
                 });
