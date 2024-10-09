@@ -10,6 +10,25 @@
         body { font-family: Arial, sans-serif; }
         img { max-width: 100%; }
         .rectangle { position: absolute; border: 2px solid red; pointer-events: none; }
+        .spinner { 
+            display: none; 
+            width: 50px; 
+            height: 50px; 
+            border: 6px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 6px solid #3498db;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .status {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -21,6 +40,8 @@
 </form>
 
 <div id="outputSection" style="position: relative;"></div>
+<div class="spinner" id="spinner"></div>
+<div class="status" id="statusMessage"></div>
 
 <script>
     document.getElementById('inputForm').addEventListener('submit', function(event) {
@@ -29,7 +50,15 @@
         const fileInput = document.getElementById('fileInput').files[0];
         const reader = new FileReader();
         const outputSection = document.getElementById('outputSection');
+        const spinner = document.getElementById('spinner');
+        const statusMessage = document.getElementById('statusMessage');
+
         outputSection.innerHTML = ''; // Clear previous output
+        statusMessage.innerHTML = ''; // Clear previous status messages
+
+        // Show spinner while processing
+        spinner.style.display = 'block';
+        statusMessage.innerHTML = 'Processing image...';
 
         reader.onload = async function(e) {
             const imgElement = document.createElement('img');
@@ -37,15 +66,28 @@
             outputSection.appendChild(imgElement);
 
             imgElement.onload = async function() {
-                // Load COCO-SSD model
-                const model = await cocoSsd.load();
-                const predictions = await model.detect(imgElement);
+                try {
+                    // Load COCO-SSD model
+                    const model = await cocoSsd.load();
+                    const predictions = await model.detect(imgElement);
 
-                // Draw rectangles around detected objects
-                predictions.forEach(prediction => {
-                    drawRectangle(outputSection, prediction.bbox[0], prediction.bbox[1], prediction.bbox[2], prediction.bbox[3]);
-                    console.log(`Detected: ${prediction.class} with confidence: ${prediction.score}`);
-                });
+                    // Draw rectangles around detected objects
+                    if (predictions.length > 0) {
+                        predictions.forEach(prediction => {
+                            drawRectangle(outputSection, prediction.bbox[0], prediction.bbox[1], prediction.bbox[2], prediction.bbox[3]);
+                            console.log(`Detected: ${prediction.class} with confidence: ${prediction.score}`);
+                        });
+                        statusMessage.innerHTML = 'Detection complete!';
+                    } else {
+                        statusMessage.innerHTML = 'No objects detected.';
+                    }
+                } catch (error) {
+                    console.error('Error during detection:', error);
+                    statusMessage.innerHTML = 'Detection failed. Please try again.';
+                } finally {
+                    // Hide spinner when done
+                    spinner.style.display = 'none';
+                }
             };
         };
 
