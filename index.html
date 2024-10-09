@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOLO Object Detection</title>
+    <title>COCO-SSD Object Detection</title>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-vis"></script>
-    <script src="https://cdn.jsdelivr.net/gh/hyperzsb/yolo-tfjs/dist/yolo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
     <style>
         body { font-family: Arial, sans-serif; }
         img { max-width: 100%; }
@@ -15,7 +14,7 @@
 </head>
 <body>
 
-<h1>YOLO Object Detection</h1>
+<h1>COCO-SSD Object Detection</h1>
 <form id="inputForm">
     <input type="file" id="fileInput" accept="image/*" required>
     <button type="submit">Process</button>
@@ -24,7 +23,7 @@
 <div id="outputSection" style="position: relative;"></div>
 
 <script>
-    document.getElementById('inputForm').addEventListener('submit', async function(event) {
+    document.getElementById('inputForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
         const fileInput = document.getElementById('fileInput').files[0];
@@ -38,8 +37,8 @@
             outputSection.appendChild(imgElement);
 
             imgElement.onload = async function() {
-                // Load YOLO model
-                const model = await yolo.load(); // This will change if using a different model
+                // Load COCO-SSD model
+                const model = await cocoSsd.load();
                 const predictions = await model.detect(imgElement);
 
                 // Draw rectangles around detected objects
